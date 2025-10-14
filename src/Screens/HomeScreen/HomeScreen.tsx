@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import styles from './styles';
 import { LIST_ZELLER_CUSTOMERS } from '../../GraphQL/queries';
-import { ListZellerCustomersData } from '../../Components/CustomerList';
+import { ListZellerCustomersData } from '../../Components/types';
 import { useQuery } from '@apollo/client/react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
@@ -44,7 +44,7 @@ function groupByLetter(customers: Customer[]): CustomerSection[] {
     }));
 }
 
-const HomeScreen: React.FC<CustomerListScreenProps> = () => {
+const HomeScreen: React.FC<CustomerListScreenProps> = ({ navigation }) => {
   const { loading, error, data } = useQuery<ListZellerCustomersData>(LIST_ZELLER_CUSTOMERS)
   const [selectedRole, setSelectedRole] = useState<RoleType>('All');
   const [filteredCustomers, setfilteredCustomers] = useState<Customer[]>([]);
@@ -54,27 +54,27 @@ const HomeScreen: React.FC<CustomerListScreenProps> = () => {
       setfilteredCustomers(
         (data?.listZellerCustomers?.items ?? [])
           .filter((c): c is Customer => !!c && typeof c.id === 'string' && typeof c.name === 'string' && !!c.role)
-          .map((c) => ({
-            id: c.id,
-            name: c.name as string,
-            role: c.role as 'Admin' | 'Manager',
+          .map((customer: any) => ({
+            id: customer.id,
+            name: customer.name as string,
+            role: customer.role as 'Admin' | 'Manager',
           }))
       );
     } else {
       setfilteredCustomers(
         (data?.listZellerCustomers?.items ?? [])
           .filter(
-            (c): c is Customer =>
-              !!c &&
-              typeof c.id === 'string' &&
-              typeof c.name === 'string' &&
-              !!c.role &&
-              c.role === selectedRole
+            (customer: any): customer is Customer =>
+              !!customer &&
+              typeof customer.id === 'string' &&
+              typeof customer.name === 'string' &&
+              !!customer.role &&
+              customer.role === selectedRole
           )
-          .map((c) => ({
-            id: c.id,
-            name: c.name as string,
-            role: c.role as 'Admin' | 'Manager',
+          .map((customer: any) => ({
+            id: customer.id,
+            name: customer.name as string,
+            role: customer.role as 'Admin' | 'Manager',
           }))
       );
     }
@@ -136,7 +136,9 @@ const HomeScreen: React.FC<CustomerListScreenProps> = () => {
             )}
             contentContainerStyle={{ paddingBottom: 80 }}
           />
-          <TouchableOpacity style={styles.fab}>
+          <TouchableOpacity style={styles.fab} onPress={()=>{
+            navigation.navigate("AddUser")
+          }}>
             <Text style={styles.fabText}>+</Text>
           </TouchableOpacity>
         </View>

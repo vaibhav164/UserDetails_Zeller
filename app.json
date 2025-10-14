@@ -1,4 +1,7 @@
 {
   "name": "UsersList",
-  "displayName": "UsersList"
+  "displayName": "UsersList",
+  "plugins": [
+    "expo-asset"
+  ]
 }
