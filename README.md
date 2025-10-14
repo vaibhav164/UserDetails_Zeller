@@ -1,97 +1,89 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# UserDetails_Zeller
 
-# Getting Started
+## A modern React Native app for robust user management.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+This project demonstrates scalable TypeScript architecture, clean UI, offline-first sync, and test-driven development—built especially for the Zeller coding challenge.
 
-## Step 1: Start Metro
+## ✨ Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- **User List Management:** Display, filter, and manage user records effortlessly.
+- **GraphQL Integration:** Syncs with the provided listZellerCustomers query for live data.
+- **Offline-Ready:** Users and updates are persisted locally using SQLite, for seamless offline experience.
+- **Full CRUD:** Add, edit and delete users locally—no network mutation required.
+- **Field Validation:** Names allow only letters & spaces (max 50 chars). Emails validated.
+- **User Roles:** Easily switch and filter users as Admin or Manager.
+- **Modern UI:** Responsive design, animated tabs, and interactive forms.
+- **Cross-Platform:** Runs smoothly on both iOS and Android.
+- **Tested:** Covered with unit/integration tests for confidence and maintainability.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+
+
+## 🚀 Demo
+
+Easy, intuitive, mobile-first form for creating users.
+
+## 📐 Architecture
+
+- **React Native** (TypeScript)
+- **GraphQL** via Apollo Client
+- **SQLite** for offline persistence
+- **React Navigation** (Stack & PagerView)
+- **Jest & React Native Testing Library** for tests
+
+> **Modular file structure: screens, db, graphql, components, types, tests.**
+
+## 📦 Getting Started
+
+### bash
 
 ```sh
-# Using npm
-npm start
+# 1. Clone and enter the project
+git clone https://github.com/vaibhav164/UserDetails_Zeller.git
+cd UserDetails_Zeller
 
-# OR using Yarn
-yarn start
-```
+# 2. Install JS dependencies
+yarn install         # or npm install
 
-## Step 2: Build and run your app
+# 3. Start Metro bundler
+yarn start           # or npm start
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
+# 4. Run on Android
 yarn android
-```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+# 5. Run on iOS (first-time: cd ios && pod install)
 yarn ios
+
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+> **Need help?** See [React Native Environment Setup](https://reactnative.dev/docs/environment-setup).
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🛠 Usage Guide
 
-## Step 3: Modify your app
+- **Browse Users:** View, filter by Admin/Manager, or search by name.
+- **Add User:** Tap "Create User", fill out the form, pick a role, and submit.
+- **Edit/Delete:** (UI supports local record manipulation)
+- **Pull to Refresh:** Get the latest user data (when online).
 
-Now that you have successfully run the app, let's make changes!
+## 🧑‍💻 Project Structure
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```sh
+/src
+  /Components    // Reusable UI elements
+  /GraphQl       // All queries, mutations
+  /LocalDB       // SQLite integration, db utils
+  /Navigation    // Navigator for Screens (Home, AddUser, etc.)
+  /screens       // App screens (Home, AddUser, etc.)
+  /types         // Shared TypeScript types & interfaces
+  /utils         // utils files like image or constant files
+  /tests         // Jest/RTL test suites
+App.tsx          // entrypoint
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🧪 Tests & Quality
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+```sh
+# Run all test suites
+yarn test       // entrypoint
+```
+- Snapshots and unit tests for components, logic, and flows
+- Code linting and formatting enforced
