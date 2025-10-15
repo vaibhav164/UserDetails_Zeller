@@ -87,7 +87,6 @@ async function onCreateUser(newUser: Customer) {
     if (validate()) {
         // createTables
         let newUser: Customer = { id: Math.random().toString(), name: form.firstName + ' ' + form.lastName, role:form.role.toUpperCase() as 'Admin' | 'Manager' };
-        console.log('Form submitted:', newUser);
         onCreateUser(newUser);
     }
   }
