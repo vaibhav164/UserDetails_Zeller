@@ -12,8 +12,9 @@ import { LIST_ZELLER_CUSTOMERS } from '../../GraphQL/queries';
 import { ListZellerCustomersData } from '../../Components/types';
 import { useQuery } from '@apollo/client/react';
 import Icon from 'react-native-vector-icons/EvilIcons';
+import { createTables, getDBConnection, getUsers, saveUsers } from '../../LocalDB/LocalDB';
 
-interface Customer {
+export interface Customer {
   id: string;
   name: string;
   role: 'Admin' | 'Manager';
@@ -46,39 +47,44 @@ function groupByLetter(customers: Customer[]): CustomerSection[] {
 
 const HomeScreen: React.FC<CustomerListScreenProps> = ({ navigation }) => {
   const { loading, error, data } = useQuery<ListZellerCustomersData>(LIST_ZELLER_CUSTOMERS)
-  const [selectedRole, setSelectedRole] = useState<RoleType>('All');
-  const [filteredCustomers, setfilteredCustomers] = useState<Customer[]>([]);
+  const [localUsers, setLocalUsers] = useState<Customer[]>([]);
+  const [loadingLocalUsers, setLoadingLocalUsers] = useState(true);
+  const [selectedRole, setSelectedRole] = useState<'All' | 'Admin' | 'Manager'>('All');
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+
+
+useEffect(() => {
+    async function syncAndLoad() {
+      const db = await getDBConnection();
+      await createTables(db);
+
+      if (data?.listZellerCustomers?.items?.length) {
+        // Prepare user array for SQLite
+        const usersToSave: Customer[] = data.listZellerCustomers.items
+          .filter(c => c && c.id && c.name && c.role)
+          .map(customer => ({
+            id: customer!.id,
+            name: customer!.name,
+            role: customer!.role as 'Admin' | 'Manager',
+          }));
+          await saveUsers(db, usersToSave);
+        }
+        
+        const storedUsers = await getUsers(db);
+      setLocalUsers(storedUsers);
+      setLoadingLocalUsers(false);
+    }
+
+    syncAndLoad().catch(console.error);
+  }, [data]);
 
   useEffect(() => {
     if (selectedRole === 'All') {
-      setfilteredCustomers(
-        (data?.listZellerCustomers?.items ?? [])
-          .filter((c): c is Customer => !!c && typeof c.id === 'string' && typeof c.name === 'string' && !!c.role)
-          .map((customer: any) => ({
-            id: customer.id,
-            name: customer.name as string,
-            role: customer.role as 'Admin' | 'Manager',
-          }))
-      );
+      setFilteredCustomers(localUsers);
     } else {
-      setfilteredCustomers(
-        (data?.listZellerCustomers?.items ?? [])
-          .filter(
-            (customer: any): customer is Customer =>
-              !!customer &&
-              typeof customer.id === 'string' &&
-              typeof customer.name === 'string' &&
-              !!customer.role &&
-              customer.role === selectedRole
-          )
-          .map((customer: any) => ({
-            id: customer.id,
-            name: customer.name as string,
-            role: customer.role as 'Admin' | 'Manager',
-          }))
-      );
+      setFilteredCustomers(localUsers.filter(user => user.role === selectedRole.toUpperCase()));
     }
-  }, [selectedRole, data]);
+  }, [localUsers, selectedRole]);
 
   const mappedCustomers: Customer[] = useMemo(() => {
     return (filteredCustomers ?? [])
@@ -90,7 +96,9 @@ const HomeScreen: React.FC<CustomerListScreenProps> = ({ navigation }) => {
       }));
   }, [filteredCustomers]);
 
-  const sections = useMemo(() => groupByLetter(mappedCustomers), [mappedCustomers]);
+
+
+  const sections = useMemo(() => groupByLetter(mappedCustomers), [filteredCustomers]);
 
   return (
     <SafeAreaView style={{ flex: 1}}>

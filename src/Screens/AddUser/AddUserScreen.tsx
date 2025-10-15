@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import { styles } from './styles';
 import { strings } from '../../utils/Constants/strings';
+import { NameRegx } from '../../utils/Constants/constants';
 
 type UserRole = 'Admin' | 'Manager';
 
 export interface NewUserFormData {
   firstName: string;
   lastName: string;
-  email: string;
   role: UserRole;
 }
 
@@ -28,11 +28,9 @@ export const AddUserScreen: React.FC<Props> = ({ navigation}) => {
   const [form, setForm] = useState<NewUserFormData>({
     firstName: '',
     lastName: '',
-    email: '',
     role: 'Admin',
   });
   const [error, setError] = useState<string | null>(null);
-//   const navigation = useNavigation();
   function handleChange<K extends keyof NewUserFormData>(key: K, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -46,16 +44,12 @@ export const AddUserScreen: React.FC<Props> = ({ navigation}) => {
       setError(strings.first_last_Name_required);
       return false;
     }
-    if (!/^[A-Za-z\s]+$/.test(form.firstName) || form.firstName.length > 50) {
+    if (!NameRegx.test(form.firstName) || form.firstName.length > 50) {
       setError(strings.first_name_invalid);
       return false;
     }
-    if (!/^[A-Za-z\s]+$/.test(form.lastName) || form.lastName.length > 50) {
+    if (!NameRegx.test(form.lastName) || form.lastName.length > 50) {
       setError(strings.last_name_invalid);
-      return false;
-    }
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      setError(strings.email_invalid);
       return false;
     }
     setError(null);
@@ -64,6 +58,13 @@ export const AddUserScreen: React.FC<Props> = ({ navigation}) => {
 
   function handleSubmit() {
     if (validate()) {
+        console.log('Form submitted:', form);
+        let newUser = { id: Math.random().toString(), name: form.firstName + ' ' + form.lastName, role: form.role };
+        setForm({
+        firstName: '',
+        lastName: '',
+        role: 'Admin',
+  })
     //   onCreate(form);
     }
   }
@@ -97,15 +98,6 @@ export const AddUserScreen: React.FC<Props> = ({ navigation}) => {
             onChangeText={(text) => handleChange('lastName', text)}
             autoCapitalize="words"
             testID="lastNameInput"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={form.email}
-            onChangeText={(text) => handleChange('email', text)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            testID="emailInput"
           />
           <Text style={styles.label}>User Role</Text>
           <View style={styles.roleSwitch}>
