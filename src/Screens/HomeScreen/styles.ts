@@ -26,6 +26,7 @@ const styles = StyleSheet.create<CustomerListScreenStyles>({
   container: {
     backgroundColor: '#fff',
     flex: 1,
+    width: '100%',
   },
   header: {
     marginTop: 25,

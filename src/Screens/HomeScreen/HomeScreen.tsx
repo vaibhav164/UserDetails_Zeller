@@ -127,7 +127,7 @@ const HomeScreen: React.FC<CustomerListScreenProps> = ({ navigation }) => {
     );
   }
   return (
-    <SafeAreaView style={{ flex: 1}}>
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
