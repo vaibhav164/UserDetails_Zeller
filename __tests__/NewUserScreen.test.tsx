@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { AddUserScreen } from '../Screens/AddUser/AddUserScreen';
+import { AddUserScreen } from '../src/Screens/AddUser/AddUserScreen';
 // import { NewUserScreen } from './NewUserScreen';
 
 describe('NewUserScreen', () => {
