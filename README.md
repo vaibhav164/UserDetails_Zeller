@@ -24,6 +24,26 @@ Easy, intuitive, mobile-first form for creating users.
 
 ## 📐 Architecture
 
+- **Layered Modular Architecture:**
+
+The app separates UI components, screens, business logic, data management, and persistence for clarity and  maintainability.
+
+-**Data Flow:**
+
+- Fetches user data from a GraphQL API.
+- Persists it to a local SQLite database for offline access.
+- UI renders always from the database, not the network.
+- All user creation/edit/removal is done locally, with validation at the form level.
+
+- **Navigation:**
+
+Uses React Navigation stack and animated pager for switching between admin/manager lists.
+
+- **Testing:**
+Code is covered by Jest and React Native Testing Library.
+
+## Key Technologies:
+
 - **React Native** (TypeScript)
 - **GraphQL** via Apollo Client
 - **SQLite** for offline persistence
@@ -87,3 +107,31 @@ yarn test       // entrypoint
 ```
 - Snapshots and unit tests for components, logic, and flows
 - Code linting and formatting enforced
+
+## ✅ Challenge Requirements Checklist
+
+- Modular, production-ready TypeScript app
+- GraphQL-powered, with offline SQLite sync
+- Add/Edit/Delete users, with validation
+- Role filtering and real-time search
+- Animated tab/pager navigation
+- High code/test coverage, clean architecture
+
+## 📸 Screenshots
+User List Image:- 
+![User List Image](./src/utils/images/UserList.png)
+
+Add User Image:- 
+![Add User Image](./src/utils/images/AddUser.png)
+
+![SnapShots](./src/utils/images/Test1.gif)
+
+
+## 📄 License
+#### MIT © 2025 Vaibhav
+
+## 🙋‍♂️ Contact
+
+For questions, reach out on [LinkedIn](https://www.linkedin.com/in/vaibhav-singh-90009714b/) or  via call **+91-(9158402302)**.
+
+**Built with ❤️ for the Zeller Coding Challenge.**
