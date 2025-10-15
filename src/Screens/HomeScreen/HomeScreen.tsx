@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  Pressable,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import { LIST_ZELLER_CUSTOMERS } from '../../GraphQL/queries';
@@ -13,7 +15,8 @@ import { ListZellerCustomersData } from '../../Components/types';
 import { useQuery } from '@apollo/client/react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { createTables, getDBConnection, getUsers, saveUsers } from '../../LocalDB/LocalDB';
-
+import { useFocusEffect } from '@react-navigation/native';
+import { deleteUser } from '../../LocalDB/LocalStograge';
 export interface Customer {
   id: string;
   name: string;
@@ -51,32 +54,36 @@ const HomeScreen: React.FC<CustomerListScreenProps> = ({ navigation }) => {
   const [loadingLocalUsers, setLoadingLocalUsers] = useState(true);
   const [selectedRole, setSelectedRole] = useState<'All' | 'Admin' | 'Manager'>('All');
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
-
-useEffect(() => {
-    async function syncAndLoad() {
+  useFocusEffect(
+  React.useCallback(() => {
+    async function loadLocalUsers() {
       const db = await getDBConnection();
       await createTables(db);
 
+      // Optionally sync remote data if needed
       if (data?.listZellerCustomers?.items?.length) {
-        // Prepare user array for SQLite
         const usersToSave: Customer[] = data.listZellerCustomers.items
           .filter(c => c && c.id && c.name && c.role)
-          .map(customer => ({
-            id: customer!.id,
-            name: customer!.name,
-            role: customer!.role as 'Admin' | 'Manager',
+          .map(c => ({
+            id: c!.id,
+            name: c!.name,
+            role: c!.role as 'Admin' | 'Manager',
           }));
-          await saveUsers(db, usersToSave);
-        }
-        
-        const storedUsers = await getUsers(db);
+        await saveUsers(db, usersToSave);
+      }
+
+      const storedUsers = await getUsers(db);
       setLocalUsers(storedUsers);
       setLoadingLocalUsers(false);
     }
 
-    syncAndLoad().catch(console.error);
-  }, [data]);
+    loadLocalUsers().catch(console.error);
+    return () => {};
+  }, [data])
+);
+
 
   useEffect(() => {
     if (selectedRole === 'All') {
@@ -100,6 +107,25 @@ useEffect(() => {
 
   const sections = useMemo(() => groupByLetter(mappedCustomers), [filteredCustomers]);
 
+  function handleDeleteUser(user: Customer) {
+    Alert.alert(
+      'Confirm Delete',
+      `Are you sure you want to delete ${user.name}?`,
+      [
+        { text: 'Cancel', onPress: () => setUserToDelete(null), style: 'cancel' },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            const db = await getDBConnection();
+            await deleteUser(db, user.id);
+            const storedUsers = await getUsers(db);
+            setLocalUsers(storedUsers);
+            setUserToDelete(null);
+          },
+        },
+      ]
+    );
+  }
   return (
     <SafeAreaView style={{ flex: 1}}>
       {loading ? (
@@ -134,13 +160,22 @@ useEffect(() => {
               </View>
             )}
             renderItem={({ item }) => (
-              <View style={styles.row}>
+              <>
+              <Pressable style={styles.row} onPress={() => { userToDelete && userToDelete.length > 0 ? setUserToDelete("") : setUserToDelete(item.id) }}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarLetter}>{item.name[0].toUpperCase()}</Text>
                 </View>
                 <Text style={styles.name}>{item.name}</Text>
                 {item.role === 'Admin' && <Text style={styles.role}>Admin</Text>}
-              </View>
+              </Pressable>
+                     {userToDelete === item.id && <TouchableOpacity
+                        style={styles.createBtn}
+                        onPress={()=>handleDeleteUser(item)}
+                        testID="createUserBtn"
+                      >
+                        <Text style={styles.createBtnText}>Delete User</Text>
+                      </TouchableOpacity>}
+              </>
             )}
             contentContainerStyle={{ paddingBottom: 80 }}
           />

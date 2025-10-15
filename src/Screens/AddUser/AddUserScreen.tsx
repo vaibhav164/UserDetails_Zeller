@@ -7,10 +7,14 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { styles } from './styles';
 import { strings } from '../../utils/Constants/strings';
 import { NameRegx } from '../../utils/Constants/constants';
+import { saveUser } from '../../LocalDB/LocalStograge';
+import { createTables, getDBConnection, getUsers } from '../../LocalDB/LocalDB';
+import { Customer } from '../HomeScreen/HomeScreen';
 
 type UserRole = 'Admin' | 'Manager';
 
@@ -55,17 +59,36 @@ export const AddUserScreen: React.FC<Props> = ({ navigation}) => {
     setError(null);
     return true;
   }
+async function onCreateUser(newUser: Customer) {
+  try {
+    const db = await getDBConnection();
 
+    // Ensure tables created (only one time ideally)
+    await createTables(db);
+
+    // Add new user to local DB
+    await saveUser(db, newUser);
+    Alert.alert('Success', 'User added successfully', [
+  { text: 'OK', onPress: () => {
+    setForm({
+    firstName: '',
+    lastName: '',
+    role: 'Admin',
+  }); 
+  navigation.goBack()} },
+    ]);
+    const users = await getUsers(db);
+
+  } catch (err) {
+    console.error('Error adding user to DB:', err);
+  }
+}
   function handleSubmit() {
     if (validate()) {
-        console.log('Form submitted:', form);
-        let newUser = { id: Math.random().toString(), name: form.firstName + ' ' + form.lastName, role: form.role };
-        setForm({
-        firstName: '',
-        lastName: '',
-        role: 'Admin',
-  })
-    //   onCreate(form);
+        // createTables
+        let newUser: Customer = { id: Math.random().toString(), name: form.firstName + ' ' + form.lastName, role:form.role.toUpperCase() as 'Admin' | 'Manager' };
+        console.log('Form submitted:', newUser);
+        onCreateUser(newUser);
     }
   }
   function onClose(){

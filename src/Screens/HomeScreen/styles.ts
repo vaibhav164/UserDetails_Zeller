@@ -18,6 +18,8 @@ interface CustomerListScreenStyles {
   role: TextStyle;
   fab: ViewStyle;
   fabText: TextStyle;
+  createBtn: ViewStyle;
+  createBtnText: TextStyle;
 }
 
 const styles = StyleSheet.create<CustomerListScreenStyles>({
@@ -82,6 +84,7 @@ const styles = StyleSheet.create<CustomerListScreenStyles>({
     paddingHorizontal: 16,
     borderBottomColor: '#EDF1F5',
     borderBottomWidth: 1,
+    zIndex:100
   },
   avatar: {
     height: 34,
@@ -123,6 +126,28 @@ const styles = StyleSheet.create<CustomerListScreenStyles>({
     fontSize: 32,
     fontWeight: 'bold',
     marginTop: -4,
+  },
+    createBtn: {
+    marginTop: 'auto',
+    backgroundColor: '#0176d3',
+    marginHorizontal: 16,
+    marginBottom: 18,
+    borderRadius: 10,
+    width: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: "#1976d2",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  createBtnText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+    paddingVertical: 5,
   },
 });
 

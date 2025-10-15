@@ -2,7 +2,7 @@ import SQLite from 'react-native-sqlite-storage';
 import { Customer } from '../Screens/HomeScreen/HomeScreen';
 
 export async function saveUser(db: SQLite.SQLiteDatabase, user: Customer) {
-  const insertQuery = `INSERT OR REPLACE INTO users (id, name, userType) VALUES (?, ?, ?);`;
+  const insertQuery = `INSERT OR REPLACE INTO users (id, name, role) VALUES (?, ?, ?);`;
   await db.executeSql(insertQuery, [user.id, user.name, user.role]);
 }
 
@@ -20,7 +20,7 @@ export async function getAllUsers(db: SQLite.SQLiteDatabase): Promise<Customer[]
 
 // Delete user by id
 export async function deleteUser(db: SQLite.SQLiteDatabase, id: string) {
-  await db.executeSql('DELETE FROM users WHERE id = ?;', [id]);
+  await db.executeSql('DELETE FROM users WHERE id = ?', [id]);
 }
 
 export async function saveUsersBulk(
@@ -30,4 +30,9 @@ export async function saveUsersBulk(
   for (const user of users) {
     await saveUser(db, user);
   }
+}
+
+export async function updateUser(db: SQLite.SQLiteDatabase, user: Customer) {
+  const query = `UPDATE users SET name = ?, role = ? WHERE id = ?`;
+  await db.executeSql(query, [user.name, user.role, user.id]);
 }
